@@ -1,60 +1,28 @@
-import random
-import string
-import requests
-from urls import BASE_URL
-
 class CourierData:
     
-    def generate_new_courier():
-    # метод генерирует строку, состоящую только из букв нижнего регистра, в качестве параметра передаём длину строки
-        def generate_random_string(length):
-            letters = string.ascii_lowercase
-            random_string = ''.join(random.choice(letters) for i in range(length))
-            return random_string
+    COURIER_DATA_1 = {
+    "login": "",
+    "password": "12345",
+    "first_name": "TestCourier"
+    }
 
-    # генерируем логин, пароль и имя курьера
-        login = generate_random_string(10)
-        password = generate_random_string(10)
-        first_name = generate_random_string(10)
+    COURIER_DATA_2 = {
+    "login": "test12340001",
+    "password": "",
+    "first_name": "TestCourier"
+    }
 
-    # собираем тело запроса
-        payload = {
-            "login": login,
-            "password": password,
-            "firstName": first_name
-        }
+    COURIER_DATA_3 = {
+    "login": "",
+    "password": "12345"
+    }
 
-        return payload
-    
-    def register_new_courier_and_return_login_password():
-    # метод генерирует строку, состоящую только из букв нижнего регистра, в качестве параметра передаём длину строки
-        def generate_random_string(length):
-            letters = string.ascii_lowercase
-            random_string = ''.join(random.choice(letters) for i in range(length))
-            return random_string
+    COURIER_DATA_4 = {
+    "login": "test123",
+    "password": ""
+    }
 
-    # создаём список, чтобы метод мог его вернуть
-        login_pass = []
-
-    # генерируем логин, пароль и имя курьера
-        login = generate_random_string(10)
-        password = generate_random_string(10)
-        first_name = generate_random_string(10)
-
-    # собираем тело запроса
-        payload = {
-            "login": login,
-            "password": password,
-            "firstName": first_name
-        }
-
-    # отправляем запрос на регистрацию курьера и сохраняем ответ в переменную response
-        response = requests.post(f"{BASE_URL}/api/v1/courier", data=payload)
-
-    # если регистрация прошла успешно (код ответа 201), добавляем в список логин и пароль курьера
-        if response.status_code == 201:
-            login_pass.append(login)
-            login_pass.append(password)
-
-    # возвращаем список
-        return login_pass 
+    COURIER_DATA_5 = {
+    "login": "test123",
+    "password": "07"
+    }

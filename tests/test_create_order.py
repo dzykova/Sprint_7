@@ -2,9 +2,11 @@ import requests
 import pytest
 from data.order_data import OrderData
 from urls import BASE_URL
+import allure
 
 class TestCreateOrder:
 
+    @allure.title('Проверка API "Создание заказа"')
     @pytest.mark.parametrize(
         'payload', 
         [
@@ -16,7 +18,8 @@ class TestCreateOrder:
     )
     def test_create_order(self, payload):
 
-        response = requests.post(f"{BASE_URL}/api/v1/orders", json=payload)
+        with allure.step('Отправляем запрос на создание заказа'):
+            response = requests.post(f"{BASE_URL}/api/v1/orders", json=payload)
 
         r = response.json()
 

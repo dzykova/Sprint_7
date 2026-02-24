@@ -1,11 +1,14 @@
 import requests
 from urls import BASE_URL
+import allure
 
 class TestGetOrdersList:
 
+    @allure.title('Проверка API "Получение списка заказов"')
     def test_get_orders_list(self):
 
-        response = requests.get(f"{BASE_URL}/api/v1/orders")
+        with allure.step('Отправляем запрос на получение списка заказов'):
+            response = requests.get(f"{BASE_URL}/api/v1/orders")
 
         r = response.json()
 

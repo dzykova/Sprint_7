@@ -1,68 +1,49 @@
 import requests
 from data.courier_data import CourierData
 from urls import BASE_URL
+import allure
 
 class TestLoginCourier:
 
-    def test_login_courier_positive(self):
+    @allure.title('Проверка API "Логин курьера" - позитивный кейс')
+    def test_login_courier_positive(self, courier):
 
-        login_pass = CourierData.register_new_courier_and_return_login_password()
 
-        payload = {
-            "login": login_pass[0],
-            "password": login_pass[1]
-        }
-
-        response = requests.post(f"{BASE_URL}/api/v1/courier/login", data=payload)
+        with allure.step('Отправляем запрос на логин курьера'):
+            response = requests.post(f"{BASE_URL}/api/v1/courier/login", data=courier)
 
         r = response.json()
 
         assert response.status_code == 200
         assert "id" in r
 
-        id_courier = []
-        id_courier.append(r["id"])
-
-        response_delete = requests.delete(f"{BASE_URL}/api/v1/courier/{id_courier[0]}")
-
-        assert response_delete.status_code == 200
-
+    @allure.title('Проверка API "Логин курьера" без логина в реквесте - негативный кейс')
     def test_login_courier_without_login_negative(self):
 
-        payload = {
-            "login": "",
-            "password": "12345"
-        }
-
-        response = requests.post(f"{BASE_URL}/api/v1/courier/login", data=payload)
+        with allure.step('Отправляем запрос на логин курьера'):
+            response = requests.post(f"{BASE_URL}/api/v1/courier/login", data=CourierData.COURIER_DATA_3)
 
         r = response.json()
 
         assert response.status_code == 400
         assert "Недостаточно данных для входа" == r["message"]
 
+    @allure.title('Проверка API "Логин курьера" без пароля в реквесте - негативный кейс')
     def test_login_courier_without_password_negative(self):
 
-        payload = {
-            "login": "test123",
-            "password": ""
-        }
-
-        response = requests.post(f"{BASE_URL}/api/v1/courier/login", data=payload)
+        with allure.step('Отправляем запрос на логин курьера'):
+            response = requests.post(f"{BASE_URL}/api/v1/courier/login", data=CourierData.COURIER_DATA_4)
 
         r = response.json()
 
         assert response.status_code == 400
         assert "Недостаточно данных для входа" == r["message"]
 
+    @allure.title('Проверка API "Логин курьера" с несуществующими данными - негативный кейс')
     def test_login_courier_with_unexisted_data_negative(self):
 
-        payload = {
-            "login": "test123",
-            "password": "07"
-        }
-
-        response = requests.post(f"{BASE_URL}/api/v1/courier/login", data=payload)
+        with allure.step('Отправляем запрос на логин курьера'):
+            response = requests.post(f"{BASE_URL}/api/v1/courier/login", data=CourierData.COURIER_DATA_5)
 
         r = response.json()
 

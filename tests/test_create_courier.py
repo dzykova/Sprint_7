@@ -1,91 +1,56 @@
 import requests
 from data.courier_data import CourierData
 from urls import BASE_URL
+import allure
 
 class TestCreateCourier:
 
-    def test_create_courier_positive(self):
+    @allure.title('Проверка API "Создание курьера" - позитивный кейс')
+    def test_create_courier_positive(self, new_courier):
 
-        payload = CourierData.generate_new_courier()
-
-        response = requests.post(f"{BASE_URL}/api/v1/courier", data=payload)
+        with allure.step('Отправляем запрос на создание курьера'):
+            response = requests.post(f"{BASE_URL}/api/v1/courier", data=new_courier)
 
         r = response.json()
 
         assert response.status_code == 201
         assert True == r["ok"]
-
-        payload_login = {"login": payload["login"], "password": payload["password"]}
-        response_login = requests.post(f"{BASE_URL}/api/v1/courier/login", data=payload_login)
-
-        id_courier = []
-        r1 = response_login.json()
-
-        if response_login.status_code == 200:
-            id_courier.append(r1["id"])
-
-        response_delete = requests.delete(f"{BASE_URL}/api/v1/courier/{id_courier[0]}")
-
-        assert response_delete.status_code == 200
-
+    
+    @allure.title('Проверка API "Создание курьера" без логина в реквесте - негативный кейс')
     def test_create_courier_without_login_negative(self):
 
-        payload_registration = {
-            "login": "",
-            "password": "12345",
-            "first_name": "TestCourier"
-        }
-
-        response = requests.post(f"{BASE_URL}/api/v1/courier", data=payload_registration)
+        with allure.step('Отправляем запрос на создание курьера'):
+            response = requests.post(f"{BASE_URL}/api/v1/courier", data=CourierData.COURIER_DATA_1)
 
         r = response.json()
 
         assert response.status_code == 400
         assert "Недостаточно данных для создания учетной записи" == r["message"]
 
+    @allure.title('Проверка API "Создание курьера" без пароля в реквесте - негативный кейс')
     def test_create_courier_without_password_negative(self):
 
-        payload_registration = {
-            "login": "test12340001",
-            "password": "",
-            "first_name": "TestCourier"
-        }
-
-        response = requests.post(f"{BASE_URL}/api/v1/courier", data=payload_registration)
+        with allure.step('Отправляем запрос на создание курьера'):
+            response = requests.post(f"{BASE_URL}/api/v1/courier", data=CourierData.COURIER_DATA_2)
 
         r = response.json()
 
         assert response.status_code == 400
         assert "Недостаточно данных для создания учетной записи" == r["message"]
 
-    def test_create_courier_duplicate_negative(self):
+    @allure.title('Проверка API "Создание курьера" с дублирующимися данными - негативный кейс')
+    def test_create_courier_duplicate_negative(self, new_courier):
 
-        payload = CourierData.generate_new_courier()
+        with allure.step('Отправляем запрос на создание курьера'):
+            response = requests.post(f"{BASE_URL}/api/v1/courier", data=new_courier)
+        
 
-        response = requests.post(f"{BASE_URL}/api/v1/courier", data=payload)
+        with allure.step('Повторно отправляем запрос на создание курьера с такими же данными как в предыдущем шаге'):
+            if response.status_code == 201:
+                response_duplicate = requests.post(f"{BASE_URL}/api/v1/courier", data=new_courier)
 
-        r = response.json()
-
-        assert response.status_code == 201
-        assert True == r["ok"]
-
-        response_duplicate = requests.post(f"{BASE_URL}/api/v1/courier", data=payload)
-
-        r1 = response_duplicate.json()
+        r = response_duplicate.json()
 
         assert response_duplicate.status_code == 409
-        assert "Этот логин уже используется. Попробуйте другой." == r1["message"]
-
-        payload_login = {"login": payload["login"], "password": payload["password"]}
-        response_login = requests.post(f"{BASE_URL}/api/v1/courier/login", data=payload_login)
-
-        id_courier = []
-        r2 = response_login.json()
-
-        if response_login.status_code == 200:
-            id_courier.append(r2["id"])
-
-        response_delete = requests.delete(f"{BASE_URL}/api/v1/courier/{id_courier[0]}")
-
-        assert response_delete.status_code == 200
+        assert "Этот логин уже используется. Попробуйте другой." == r["message"]
 
