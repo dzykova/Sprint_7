@@ -46,8 +46,7 @@ class TestCreateCourier:
         
 
         with allure.step('Повторно отправляем запрос на создание курьера с такими же данными как в предыдущем шаге'):
-            if response.status_code == 201:
-                response_duplicate = requests.post(f"{BASE_URL}/api/v1/courier", data=new_courier)
+            response_duplicate = requests.post(f"{BASE_URL}/api/v1/courier", data=new_courier)
 
         r = response_duplicate.json()
 
